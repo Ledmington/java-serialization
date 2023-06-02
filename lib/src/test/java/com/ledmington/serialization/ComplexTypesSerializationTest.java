@@ -54,4 +54,52 @@ public final class ComplexTypesSerializationTest {
                 },
                 ser.toByteArray());
     }
+
+    @Test
+    public void serializeEmptyString() {
+        ser.write("");
+        assertArrayEquals(ser.toByteArray(), new byte[] {ClassCodes.STRING.getCode(), 0x00, 0x00, 0x00, 0x00});
+    }
+
+    @Test
+    public void serializeString() {
+        ser.write("serializeString");
+        assertArrayEquals(ser.toByteArray(), new byte[] {
+            ClassCodes.STRING.getCode(),
+            0x00,
+            0x00,
+            0x00,
+            (byte) 0x0f,
+            (byte) 0x00,
+            (byte) 0x73,
+            (byte) 0x00,
+            (byte) 0x65,
+            (byte) 0x00,
+            (byte) 0x72,
+            (byte) 0x00,
+            (byte) 0x69,
+            (byte) 0x00,
+            (byte) 0x61,
+            (byte) 0x00,
+            (byte) 0x6c,
+            (byte) 0x00,
+            (byte) 0x69,
+            (byte) 0x00,
+            (byte) 0x7a,
+            (byte) 0x00,
+            (byte) 0x65,
+            (byte) 0x00,
+            (byte) 0x53,
+            (byte) 0x00,
+            (byte) 0x74,
+            (byte) 0x00,
+            (byte) 0x72,
+            (byte) 0x00,
+            (byte) 0x69,
+            (byte) 0x00,
+            (byte) 0x6e,
+            (byte) 0x00,
+            (byte) 0x67
+        });
+    }
 }

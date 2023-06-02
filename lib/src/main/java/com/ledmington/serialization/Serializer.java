@@ -46,6 +46,14 @@ public final class Serializer {
                 write(opt.orElseThrow());
             }
         });
+
+        serializers.put(String.class, obj -> {
+            final String s = (String) obj;
+            write(s.length());
+            for (int i = 0; i < s.length(); i++) {
+                write(s.charAt(i));
+            }
+        });
     }
 
     public byte[] toByteArray() {

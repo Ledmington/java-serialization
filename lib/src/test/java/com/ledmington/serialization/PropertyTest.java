@@ -34,14 +34,23 @@ public final class PropertyTest {
 
     private static Object randomObject() {
         final List<Supplier<Object>> sup = List.of(
-                () -> rnd.nextBoolean(),
+                rnd::nextBoolean,
                 () -> (byte) rnd.nextInt(),
                 () -> (short) rnd.nextInt(),
-                () -> rnd.nextInt(),
-                () -> rnd.nextLong(),
-                () -> rnd.nextFloat(),
-                () -> rnd.nextDouble(),
-                () -> Optional.of(randomObject()));
+                rnd::nextInt,
+                rnd::nextLong,
+                rnd::nextFloat,
+                rnd::nextDouble,
+                () -> (char) rnd.nextInt(),
+                () -> Optional.of(randomObject()),
+                // random string
+                () -> {
+                    final StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < rnd.nextInt() % 10; i++) {
+                        sb.append((char) rnd.nextInt());
+                    }
+                    return sb.toString();
+                });
         return sup.get(rnd.nextInt(sup.size() - 1)).get();
     }
 

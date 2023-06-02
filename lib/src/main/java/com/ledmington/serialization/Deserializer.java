@@ -54,6 +54,15 @@ public final class Deserializer {
             }
             throw new InvalidOptionalException(b);
         });
+
+        deserializers.put(String.class, () -> {
+            final StringBuilder sb = new StringBuilder();
+            final int length = readInt();
+            for (int i = 0; i < length; i++) {
+                sb.append(readChar());
+            }
+            return sb.toString();
+        });
     }
 
     private byte readRaw() {
