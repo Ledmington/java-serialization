@@ -17,7 +17,7 @@
 */
 package com.ledmington.serialization;
 
-public final class InvalidBooleanException extends RuntimeException {
+final class InvalidBooleanException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     public InvalidBooleanException(byte b) {

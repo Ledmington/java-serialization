@@ -20,6 +20,7 @@ package com.ledmington.serialization;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -39,7 +40,8 @@ public final class PropertyTest {
                 () -> rnd.nextInt(),
                 () -> rnd.nextLong(),
                 () -> rnd.nextFloat(),
-                () -> rnd.nextDouble());
+                () -> rnd.nextDouble(),
+                () -> Optional.of(randomObject()));
         return sup.get(rnd.nextInt(sup.size() - 1)).get();
     }
 
@@ -59,7 +61,8 @@ public final class PropertyTest {
                         Arguments.of(Float.MAX_VALUE),
                         Arguments.of(Float.MIN_VALUE),
                         Arguments.of(Double.MAX_VALUE),
-                        Arguments.of(Double.MIN_VALUE)),
+                        Arguments.of(Double.MIN_VALUE),
+                        Arguments.of(Optional.empty())),
                 Stream.generate(() -> Arguments.of(randomObject())).distinct().limit(100));
     }
 
@@ -69,7 +72,7 @@ public final class PropertyTest {
         final Serializer ser = new Serializer();
         ser.write(obj);
         final Deserializer des = new Deserializer(ser.toByteArray());
-        final Object deserialized = des.read(obj.getClass());
+        final Object deserialized = des.read();
         assertEquals(obj, deserialized);
         assertEquals(deserialized, obj);
     }

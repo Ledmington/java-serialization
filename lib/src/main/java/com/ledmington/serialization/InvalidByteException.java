@@ -17,25 +17,8 @@
 */
 package com.ledmington.serialization;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import org.junit.jupiter.api.Test;
-
-public final class CommonDeserializationTest {
-    @Test
-    public void readNullArray() {
-        assertThrows(NullPointerException.class, () -> new Deserializer(null));
-    }
-
-    @Test
-    public void readEmptyArray() {
-        assertThrows(IllegalArgumentException.class, () -> new Deserializer(new byte[0]));
-    }
-
-    @Test
-    public void terminatedStream() {
-        final Deserializer des = new Deserializer(new byte[] {0x00});
-        des.readByte();
-        assertThrows(IllegalStateException.class, () -> des.readByte());
+public final class InvalidByteException extends RuntimeException {
+    public InvalidByteException(byte b) {
+        super(String.format("Not a byte. Expected 0x%02x but was 0x%02x.", ClassCodes.BYTE.getCode(), b));
     }
 }

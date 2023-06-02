@@ -20,6 +20,7 @@ package com.ledmington.serialization;
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public final class Serializer {
@@ -34,6 +35,17 @@ public final class Serializer {
         serializers.put(Long.class, obj -> write(((Long) obj).longValue()));
         serializers.put(Float.class, obj -> write(((Float) obj).floatValue()));
         serializers.put(Double.class, obj -> write(((Double) obj).doubleValue()));
+
+        serializers.put(Optional.class, obj -> {
+            writeRaw(ClassCodes.OPTIONAL.getCode());
+            final Optional<?> opt = (Optional<?>) obj;
+            if (opt.isEmpty()) {
+                writeRaw((byte) 0x00);
+            } else {
+                writeRaw((byte) 0xff);
+                write(opt.orElseThrow());
+            }
+        });
     }
 
     public byte[] toByteArray() {
@@ -42,47 +54,70 @@ public final class Serializer {
         return baos.toByteArray();
     }
 
-    public void write(byte b) {
+    private void writeRaw(byte b) {
         baos.write(b);
     }
 
+    public void write(byte b) {
+        writeRaw(ClassCodes.BYTE.getCode());
+        writeRaw(b);
+    }
+
     public void write(boolean b) {
+        writeRaw(ClassCodes.BOOLEAN.getCode());
         if (b) {
-            write((byte) 0xff);
+            writeRaw((byte) 0xff);
         } else {
-            write((byte) 0x00);
+            writeRaw((byte) 0x00);
         }
     }
 
     public void write(short s) {
-        write((byte) (s >> 8));
-        write((byte) (s & 0xff));
+        writeRaw(ClassCodes.SHORT.getCode());
+        writeRaw((byte) (s >> 8));
+        writeRaw((byte) (s & 0xff));
     }
 
     public void write(int i) {
-        write((byte) (i >> 24));
-        write((byte) ((i >> 16) & 0xff));
-        write((byte) ((i >> 8) & 0xff));
-        write((byte) (i & 0xff));
+        writeRaw(ClassCodes.INTEGER.getCode());
+        writeRaw((byte) (i >> 24));
+        writeRaw((byte) ((i >> 16) & 0xff));
+        writeRaw((byte) ((i >> 8) & 0xff));
+        writeRaw((byte) (i & 0xff));
     }
 
     public void write(long l) {
-        write((byte) (l >> 56));
-        write((byte) ((l >> 48) & 0xff));
-        write((byte) ((l >> 40) & 0xff));
-        write((byte) ((l >> 32) & 0xff));
-        write((byte) ((l >> 24) & 0xff));
-        write((byte) ((l >> 16) & 0xff));
-        write((byte) ((l >> 8) & 0xff));
-        write((byte) (l & 0xff));
+        writeRaw(ClassCodes.LONG.getCode());
+        writeRaw((byte) (l >> 56));
+        writeRaw((byte) ((l >> 48) & 0xff));
+        writeRaw((byte) ((l >> 40) & 0xff));
+        writeRaw((byte) ((l >> 32) & 0xff));
+        writeRaw((byte) ((l >> 24) & 0xff));
+        writeRaw((byte) ((l >> 16) & 0xff));
+        writeRaw((byte) ((l >> 8) & 0xff));
+        writeRaw((byte) (l & 0xff));
     }
 
     public void write(float f) {
-        write(Float.floatToIntBits(f));
+        writeRaw(ClassCodes.FLOAT.getCode());
+        int i = Float.floatToIntBits(f);
+        writeRaw((byte) (i >> 24));
+        writeRaw((byte) ((i >> 16) & 0xff));
+        writeRaw((byte) ((i >> 8) & 0xff));
+        writeRaw((byte) (i & 0xff));
     }
 
     public void write(double d) {
-        write(Double.doubleToLongBits(d));
+        writeRaw(ClassCodes.DOUBLE.getCode());
+        long l = Double.doubleToLongBits(d);
+        writeRaw((byte) (l >> 56));
+        writeRaw((byte) ((l >> 48) & 0xff));
+        writeRaw((byte) ((l >> 40) & 0xff));
+        writeRaw((byte) ((l >> 32) & 0xff));
+        writeRaw((byte) ((l >> 24) & 0xff));
+        writeRaw((byte) ((l >> 16) & 0xff));
+        writeRaw((byte) ((l >> 8) & 0xff));
+        writeRaw((byte) (l & 0xff));
     }
 
     public void write(final Object obj) {

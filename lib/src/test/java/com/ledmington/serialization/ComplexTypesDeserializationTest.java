@@ -17,25 +17,22 @@
 */
 package com.ledmington.serialization;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
-public final class CommonDeserializationTest {
+public final class ComplexTypesDeserializationTest {
     @Test
-    public void readNullArray() {
-        assertThrows(NullPointerException.class, () -> new Deserializer(null));
-    }
-
-    @Test
-    public void readEmptyArray() {
-        assertThrows(IllegalArgumentException.class, () -> new Deserializer(new byte[0]));
-    }
-
-    @Test
-    public void terminatedStream() {
+    public void deserializeEmptyOptional() {
         final Deserializer des = new Deserializer(new byte[] {0x00});
-        des.readByte();
-        assertThrows(IllegalStateException.class, () -> des.readByte());
+        assertEquals(Optional.empty(), des.read());
+    }
+
+    @Test
+    public void deserializeOptional() {
+        final Deserializer des = new Deserializer(new byte[] {(byte) 0xff, (byte) 0x0f});
+        assertEquals(Optional.of(15), des.read());
     }
 }

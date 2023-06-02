@@ -43,12 +43,20 @@ public final class Deserializer {
         deserializers.put(Double.class, () -> readDouble());
     }
 
-    public byte readByte() {
+    private byte readRaw() {
         int b = bais.read();
         if (b == -1) {
             throw new IllegalStateException("Can't read if the stream is terminated.");
         }
         return (byte) (b & 0xff);
+    }
+
+    public byte readByte() {
+        final byte code = readRaw();
+        if (code != ClassCodes.BYTE.getCode()) {
+            throw new InvalidByteException(code);
+        }
+        return readRaw();
     }
 
     public boolean readBoolean() {
@@ -99,7 +107,9 @@ public final class Deserializer {
         return Double.longBitsToDouble(readLong());
     }
 
-    public Object read(final Class<?> clazz) {
+    public Object read() {
+        final byte classCode = readByte();
+        final Class<?> clazz = ClassCodes.fromCode(classCode);
         if (!deserializers.containsKey(clazz)) {
             throw new IllegalArgumentException(
                     String.format("No registered deserializer for the given class %s", clazz.getName()));

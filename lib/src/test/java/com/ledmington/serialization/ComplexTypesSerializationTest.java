@@ -17,25 +17,41 @@
 */
 package com.ledmington.serialization;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
+import java.util.Optional;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public final class CommonDeserializationTest {
-    @Test
-    public void readNullArray() {
-        assertThrows(NullPointerException.class, () -> new Deserializer(null));
+public final class ComplexTypesSerializationTest {
+
+    private Serializer ser;
+
+    @BeforeEach
+    public void setup() {
+        ser = new Serializer();
     }
 
     @Test
-    public void readEmptyArray() {
-        assertThrows(IllegalArgumentException.class, () -> new Deserializer(new byte[0]));
+    public void serializeEmptyOptional() {
+        ser.write(Optional.empty());
+        assertArrayEquals(new byte[] {ClassCodes.OPTIONAL.getCode(), 0x00}, ser.toByteArray());
     }
 
     @Test
-    public void terminatedStream() {
-        final Deserializer des = new Deserializer(new byte[] {0x00});
-        des.readByte();
-        assertThrows(IllegalStateException.class, () -> des.readByte());
+    public void serializeOptional() {
+        ser.write(Optional.of(15));
+        assertArrayEquals(
+                new byte[] {
+                    ClassCodes.OPTIONAL.getCode(),
+                    (byte) 0xff,
+                    ClassCodes.INTEGER.getCode(),
+                    0x00,
+                    0x00,
+                    0x00,
+                    (byte) 0x0f
+                },
+                ser.toByteArray());
     }
 }
