@@ -63,7 +63,10 @@ public final class Deserializer {
     }
 
     public short readShort() {
-        return (short) (readByte() << 8 | readByte());
+        short s = (short) 0x0;
+        s = (short) ((s << 8) | (readByte() & 0xff));
+        s = (short) ((s << 8) | (readByte() & 0xff));
+        return s;
     }
 
     public int readInt() {
