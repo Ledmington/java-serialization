@@ -1,5 +1,5 @@
 /*
-* java-serialization - A simple, efficient and fast serialization library.
+* java-serialization - Benchmarks
 * Copyright (C) 2023-2023 Filippo Barbari <filippo.barbari@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
@@ -15,16 +15,10 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.ledmington.serialization;
+package com.ledmington;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.junit.jupiter.api.Test;
-
-class LibraryTest {
-    @Test
-    void someLibraryMethodReturnsTrue() {
-        Library classUnderTest = new Library();
-        assertTrue(classUnderTest.someLibraryMethod(), "someLibraryMethod should return 'true'");
+public final class Main {
+    public static final main(final String[] args) {
+        System.out.println("benchmarks");
     }
 }
