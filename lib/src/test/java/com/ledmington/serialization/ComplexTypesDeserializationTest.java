@@ -18,6 +18,7 @@
 package com.ledmington.serialization;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Optional;
 
@@ -36,5 +37,11 @@ public final class ComplexTypesDeserializationTest {
             ClassCodes.OPTIONAL.getCode(), (byte) 0xff, ClassCodes.INTEGER.getCode(), 0x00, 0x00, 0x00, (byte) 0x0f
         });
         assertEquals(Optional.of(15), des.read());
+    }
+
+    @Test
+    public void deserializeWrongOptional() {
+        final Deserializer des = new Deserializer(new byte[] {ClassCodes.OPTIONAL.getCode(), (byte) 0x15});
+        assertThrows(InvalidOptionalException.class, des::read);
     }
 }
