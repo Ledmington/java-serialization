@@ -22,18 +22,13 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class SerializerTest {
+public final class PrimitiveSerializationTest {
 
     private Serializer ser;
 
     @BeforeEach
     public void setup() {
         ser = new Serializer();
-    }
-
-    @Test
-    public void initiallyEmpty() {
-        assertArrayEquals(ser.toByteArray(), new byte[0]);
     }
 
     @Test
