@@ -21,6 +21,7 @@ import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 public final class Deserializer {
@@ -34,13 +35,24 @@ public final class Deserializer {
         }
         this.bais = new ByteArrayInputStream(input);
 
-        deserializers.put(Boolean.class, () -> readBoolean());
-        deserializers.put(Byte.class, () -> readByte());
-        deserializers.put(Short.class, () -> readShort());
-        deserializers.put(Integer.class, () -> readInt());
-        deserializers.put(Long.class, () -> readLong());
-        deserializers.put(Float.class, () -> readFloat());
-        deserializers.put(Double.class, () -> readDouble());
+        deserializers.put(Boolean.class, this::readBoolean);
+        deserializers.put(Byte.class, this::readByte);
+        deserializers.put(Short.class, this::readShort);
+        deserializers.put(Integer.class, this::readInt);
+        deserializers.put(Long.class, this::readLong);
+        deserializers.put(Float.class, this::readFloat);
+        deserializers.put(Double.class, this::readDouble);
+
+        deserializers.put(Optional.class, () -> {
+            final byte b = readRaw();
+            if (b == 0x00) {
+                return Optional.empty();
+            }
+            if (b == (byte) 0xff) {
+                return Optional.of(read());
+            }
+            throw new InvalidOptionalException(b);
+        });
     }
 
     private byte readRaw() {
@@ -52,15 +64,11 @@ public final class Deserializer {
     }
 
     public byte readByte() {
-        final byte code = readRaw();
-        if (code != ClassCodes.BYTE.getCode()) {
-            throw new InvalidByteException(code);
-        }
         return readRaw();
     }
 
     public boolean readBoolean() {
-        byte b = readByte();
+        final byte b = readRaw();
         if (b == (byte) 0x00) {
             return false;
         }
@@ -71,44 +79,53 @@ public final class Deserializer {
     }
 
     public short readShort() {
-        short s = (short) 0x0;
-        s = (short) ((s << 8) | (readByte() & 0xff));
-        s = (short) ((s << 8) | (readByte() & 0xff));
+        short s = (short) (readRaw() & 0xff);
+        s = (short) ((s << 8) | (readRaw() & 0xff));
         return s;
     }
 
     public int readInt() {
-        int i = 0x0;
-        i = (i << 8) | (readByte() & 0xff);
-        i = (i << 8) | (readByte() & 0xff);
-        i = (i << 8) | (readByte() & 0xff);
-        i = (i << 8) | (readByte() & 0xff);
+        int i = (readRaw() & 0xff);
+        i = (i << 8) | (readRaw() & 0xff);
+        i = (i << 8) | (readRaw() & 0xff);
+        i = (i << 8) | (readRaw() & 0xff);
         return i;
     }
 
     public long readLong() {
-        long l = (long) 0x0;
-        l = (l << 8) | (readByte() & 0xff);
-        l = (l << 8) | (readByte() & 0xff);
-        l = (l << 8) | (readByte() & 0xff);
-        l = (l << 8) | (readByte() & 0xff);
-        l = (l << 8) | (readByte() & 0xff);
-        l = (l << 8) | (readByte() & 0xff);
-        l = (l << 8) | (readByte() & 0xff);
-        l = (l << 8) | (readByte() & 0xff);
+        long l = (readRaw() & 0xff);
+        l = (l << 8) | (readRaw() & 0xff);
+        l = (l << 8) | (readRaw() & 0xff);
+        l = (l << 8) | (readRaw() & 0xff);
+        l = (l << 8) | (readRaw() & 0xff);
+        l = (l << 8) | (readRaw() & 0xff);
+        l = (l << 8) | (readRaw() & 0xff);
+        l = (l << 8) | (readRaw() & 0xff);
         return l;
     }
 
     public float readFloat() {
-        return Float.intBitsToFloat(readInt());
+        int i = (readRaw() & 0xff);
+        i = (i << 8) | (readRaw() & 0xff);
+        i = (i << 8) | (readRaw() & 0xff);
+        i = (i << 8) | (readRaw() & 0xff);
+        return Float.intBitsToFloat(i);
     }
 
     public double readDouble() {
-        return Double.longBitsToDouble(readLong());
+        long l = (readRaw() & 0xff);
+        l = (l << 8) | (readRaw() & 0xff);
+        l = (l << 8) | (readRaw() & 0xff);
+        l = (l << 8) | (readRaw() & 0xff);
+        l = (l << 8) | (readRaw() & 0xff);
+        l = (l << 8) | (readRaw() & 0xff);
+        l = (l << 8) | (readRaw() & 0xff);
+        l = (l << 8) | (readRaw() & 0xff);
+        return Double.longBitsToDouble(l);
     }
 
     public Object read() {
-        final byte classCode = readByte();
+        final byte classCode = readRaw();
         final Class<?> clazz = ClassCodes.fromCode(classCode);
         if (!deserializers.containsKey(clazz)) {
             throw new IllegalArgumentException(

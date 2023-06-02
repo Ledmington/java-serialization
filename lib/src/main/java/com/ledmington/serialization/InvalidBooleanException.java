@@ -18,9 +18,9 @@
 package com.ledmington.serialization;
 
 final class InvalidBooleanException extends RuntimeException {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -2763912433246651240L;
 
     public InvalidBooleanException(byte b) {
-        super(String.format("Attempted to read a boolean but the value was 0x%02x.", b));
+        super(String.format("Not a boolean. Expected 0x00 or 0xff but was 0x%02x.", b));
     }
 }

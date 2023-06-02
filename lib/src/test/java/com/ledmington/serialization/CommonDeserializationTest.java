@@ -36,6 +36,6 @@ public final class CommonDeserializationTest {
     public void terminatedStream() {
         final Deserializer des = new Deserializer(new byte[] {0x00});
         des.readByte();
-        assertThrows(IllegalStateException.class, () -> des.readByte());
+        assertThrows(IllegalStateException.class, des::readByte);
     }
 }

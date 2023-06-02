@@ -17,8 +17,10 @@
 */
 package com.ledmington.serialization;
 
-public final class InvalidByteException extends RuntimeException {
-    public InvalidByteException(byte b) {
-        super(String.format("Not a byte. Expected 0x%02x but was 0x%02x.", ClassCodes.BYTE.getCode(), b));
+final class InvalidOptionalException extends RuntimeException {
+    private static final long serialVersionUID = -4568732960328406417L;
+
+    public InvalidOptionalException(byte b) {
+        super(String.format("Not an Optional. Expected 0x00 or 0xff but was 0x%02x.", b));
     }
 }

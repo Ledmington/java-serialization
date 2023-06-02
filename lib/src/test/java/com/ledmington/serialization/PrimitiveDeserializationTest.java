@@ -34,15 +34,16 @@ public final class PrimitiveDeserializationTest {
 
     @Test
     public void readBooleanBoxed() {
-        final Deserializer des = new Deserializer(new byte[] {(byte) 0xff, (byte) 0x00});
+        final Deserializer des = new Deserializer(
+                new byte[] {ClassCodes.BOOLEAN.getCode(), (byte) 0xff, ClassCodes.BOOLEAN.getCode(), (byte) 0x00});
         assertEquals(true, des.read());
         assertEquals(false, des.read());
     }
 
     @Test
     public void readWrongBoolean() {
-        final Deserializer des = new Deserializer(new byte[] {(byte) 0x12});
-        assertThrows(InvalidBooleanException.class, () -> des.readBoolean());
+        final Deserializer des = new Deserializer(new byte[] {ClassCodes.BOOLEAN.getCode(), (byte) 0x12});
+        assertThrows(InvalidBooleanException.class, des::readBoolean);
     }
 
     @Test
@@ -54,7 +55,8 @@ public final class PrimitiveDeserializationTest {
 
     @Test
     public void readByteBoxed() {
-        final Deserializer des = new Deserializer(new byte[] {(byte) 0x12, (byte) 0x34});
+        final Deserializer des = new Deserializer(
+                new byte[] {ClassCodes.BYTE.getCode(), (byte) 0x12, ClassCodes.BYTE.getCode(), (byte) 0x34});
         assertEquals((byte) 0x12, des.read());
         assertEquals((byte) 0x34, des.read());
     }
@@ -67,7 +69,7 @@ public final class PrimitiveDeserializationTest {
 
     @Test
     public void readShortBoxed() {
-        final Deserializer des = new Deserializer(new byte[] {(byte) 0x12, (byte) 0x34});
+        final Deserializer des = new Deserializer(new byte[] {ClassCodes.SHORT.getCode(), (byte) 0x12, (byte) 0x34});
         assertEquals((short) 4660, des.read());
     }
 
@@ -79,7 +81,8 @@ public final class PrimitiveDeserializationTest {
 
     @Test
     public void readIntegerBoxed() {
-        final Deserializer des = new Deserializer(new byte[] {(byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78});
+        final Deserializer des = new Deserializer(
+                new byte[] {ClassCodes.INTEGER.getCode(), (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78});
         assertEquals(305_419_896, des.read());
     }
 
@@ -94,7 +97,15 @@ public final class PrimitiveDeserializationTest {
     @Test
     public void readLongBoxed() {
         final Deserializer des = new Deserializer(new byte[] {
-            (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78, (byte) 0x90, (byte) 0x12, (byte) 0x34, (byte) 0x56
+            ClassCodes.LONG.getCode(),
+            (byte) 0x12,
+            (byte) 0x34,
+            (byte) 0x56,
+            (byte) 0x78,
+            (byte) 0x90,
+            (byte) 0x12,
+            (byte) 0x34,
+            (byte) 0x56
         });
         assertEquals(1_311_768_467_284_833_366L, des.read());
     }
@@ -107,7 +118,8 @@ public final class PrimitiveDeserializationTest {
 
     @Test
     public void readFloatBoxed() {
-        final Deserializer des = new Deserializer(new byte[] {(byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78});
+        final Deserializer des = new Deserializer(
+                new byte[] {ClassCodes.FLOAT.getCode(), (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78});
         assertEquals((float) 5.6904566139e-28, des.read());
     }
 
@@ -122,7 +134,15 @@ public final class PrimitiveDeserializationTest {
     @Test
     public void readDoubleBoxed() {
         final Deserializer des = new Deserializer(new byte[] {
-            (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78, (byte) 0x90, (byte) 0x12, (byte) 0x34, (byte) 0x56
+            ClassCodes.DOUBLE.getCode(),
+            (byte) 0x12,
+            (byte) 0x34,
+            (byte) 0x56,
+            (byte) 0x78,
+            (byte) 0x90,
+            (byte) 0x12,
+            (byte) 0x34,
+            (byte) 0x56
         });
         assertEquals(5.62634909901491201382066931077E-221, des.read());
     }

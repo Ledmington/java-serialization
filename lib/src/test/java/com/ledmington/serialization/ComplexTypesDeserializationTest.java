@@ -26,13 +26,15 @@ import org.junit.jupiter.api.Test;
 public final class ComplexTypesDeserializationTest {
     @Test
     public void deserializeEmptyOptional() {
-        final Deserializer des = new Deserializer(new byte[] {0x00});
+        final Deserializer des = new Deserializer(new byte[] {ClassCodes.OPTIONAL.getCode(), 0x00});
         assertEquals(Optional.empty(), des.read());
     }
 
     @Test
     public void deserializeOptional() {
-        final Deserializer des = new Deserializer(new byte[] {(byte) 0xff, (byte) 0x0f});
+        final Deserializer des = new Deserializer(new byte[] {
+            ClassCodes.OPTIONAL.getCode(), (byte) 0xff, ClassCodes.INTEGER.getCode(), 0x00, 0x00, 0x00, (byte) 0x0f
+        });
         assertEquals(Optional.of(15), des.read());
     }
 }
