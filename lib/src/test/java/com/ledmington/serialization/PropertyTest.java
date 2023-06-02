@@ -19,6 +19,9 @@ package com.ledmington.serialization;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.List;
+import java.util.Random;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.params.ParameterizedTest;
@@ -26,26 +29,42 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 public final class PropertyTest {
-    private static Stream<Arguments> allPossibleValues() {
-        return Stream.of(
-                Arguments.of(true),
-                Arguments.of(false),
-                Arguments.of(Byte.MAX_VALUE),
-                Arguments.of(Byte.MIN_VALUE),
-                Arguments.of(Short.MAX_VALUE),
-                Arguments.of(Short.MIN_VALUE),
-                Arguments.of(Integer.MAX_VALUE),
-                Arguments.of(Integer.MIN_VALUE),
-                Arguments.of(Long.MAX_VALUE),
-                Arguments.of(Long.MIN_VALUE),
-                Arguments.of(Float.MAX_VALUE),
-                Arguments.of(Float.MIN_VALUE),
-                Arguments.of(Double.MAX_VALUE),
-                Arguments.of(Double.MIN_VALUE));
+    private static final Random rnd = new Random();
+
+    private static Object randomObject() {
+        final List<Supplier<Object>> sup = List.of(
+                () -> rnd.nextBoolean(),
+                () -> (byte) rnd.nextInt(),
+                () -> (short) rnd.nextInt(),
+                () -> rnd.nextInt(),
+                () -> rnd.nextLong(),
+                () -> rnd.nextFloat(),
+                () -> rnd.nextDouble());
+        return sup.get(rnd.nextInt(sup.size() - 1)).get();
+    }
+
+    private static Stream<Arguments> randomValues() {
+        return Stream.concat(
+                Stream.of(
+                        Arguments.of(true),
+                        Arguments.of(false),
+                        Arguments.of(Byte.MAX_VALUE),
+                        Arguments.of(Byte.MIN_VALUE),
+                        Arguments.of(Short.MAX_VALUE),
+                        Arguments.of(Short.MIN_VALUE),
+                        Arguments.of(Integer.MAX_VALUE),
+                        Arguments.of(Integer.MIN_VALUE),
+                        Arguments.of(Long.MAX_VALUE),
+                        Arguments.of(Long.MIN_VALUE),
+                        Arguments.of(Float.MAX_VALUE),
+                        Arguments.of(Float.MIN_VALUE),
+                        Arguments.of(Double.MAX_VALUE),
+                        Arguments.of(Double.MIN_VALUE)),
+                Stream.generate(() -> Arguments.of(randomObject())).distinct().limit(100));
     }
 
     @ParameterizedTest
-    @MethodSource("allPossibleValues")
+    @MethodSource("randomValues")
     public void eachObjectShouldBeEqualToTheDeserializedOne(final Object obj) {
         final Serializer ser = new Serializer();
         ser.write(obj);
