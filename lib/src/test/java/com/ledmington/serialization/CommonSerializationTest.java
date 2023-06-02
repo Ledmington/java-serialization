@@ -38,6 +38,11 @@ public final class CommonSerializationTest {
     }
 
     @Test
+    public void cantSerializeNull() {
+        assertThrows(NullPointerException.class, () -> ser.write(null));
+    }
+
+    @Test
     public void cantSerializeObject() {
         assertThrows(IllegalArgumentException.class, () -> ser.write(new Object()));
     }

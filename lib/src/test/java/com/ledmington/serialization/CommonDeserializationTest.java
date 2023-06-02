@@ -40,6 +40,12 @@ public final class CommonDeserializationTest {
     }
 
     @Test
+    public void cantDeserializeNull() {
+        final Deserializer des = new Deserializer(new byte[] {0x00, 0x00});
+        assertThrows(NullPointerException.class, () -> des.read(null));
+    }
+
+    @Test
     public void cantDeserializeObject() {
         final Deserializer des = new Deserializer(new byte[] {0x00, 0x00});
         assertThrows(IllegalArgumentException.class, () -> des.read(Object.class));
