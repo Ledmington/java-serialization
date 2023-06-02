@@ -18,6 +18,7 @@
 package com.ledmington.serialization;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,5 +35,10 @@ public final class CommonSerializationTest {
     @Test
     public void initiallyEmpty() {
         assertArrayEquals(ser.toByteArray(), new byte[0]);
+    }
+
+    @Test
+    public void cantSerializeObject() {
+        assertThrows(IllegalArgumentException.class, () -> ser.write(new Object()));
     }
 }

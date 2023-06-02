@@ -38,4 +38,10 @@ public final class CommonDeserializationTest {
         des.readByte();
         assertThrows(IllegalStateException.class, () -> des.readByte());
     }
+
+    @Test
+    public void cantDeserializeObject() {
+        final Deserializer des = new Deserializer(new byte[] {0x00, 0x00});
+        assertThrows(IllegalArgumentException.class, () -> des.read(Object.class));
+    }
 }

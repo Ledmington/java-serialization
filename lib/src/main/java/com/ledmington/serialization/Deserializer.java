@@ -18,10 +18,14 @@
 package com.ledmington.serialization;
 
 import java.io.ByteArrayInputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 public final class Deserializer {
     private final ByteArrayInputStream bais;
+    private final Map<Class<?>, Supplier<Object>> deserializers = new HashMap<>();
 
     public Deserializer(final byte[] input) {
         Objects.requireNonNull(input);
@@ -29,6 +33,14 @@ public final class Deserializer {
             throw new IllegalArgumentException("Input byte array can't be empty.");
         }
         this.bais = new ByteArrayInputStream(input);
+
+        deserializers.put(Boolean.class, () -> readBoolean());
+        deserializers.put(Byte.class, () -> readByte());
+        deserializers.put(Short.class, () -> readShort());
+        deserializers.put(Integer.class, () -> readInt());
+        deserializers.put(Long.class, () -> readLong());
+        deserializers.put(Float.class, () -> readFloat());
+        deserializers.put(Double.class, () -> readDouble());
     }
 
     public byte readByte() {
@@ -82,5 +94,13 @@ public final class Deserializer {
 
     public double readDouble() {
         return Double.longBitsToDouble(readLong());
+    }
+
+    public Object read(final Class<?> clazz) {
+        if (!deserializers.containsKey(clazz)) {
+            throw new IllegalArgumentException(
+                    String.format("No registered deserializer for the given class %s", clazz.getName()));
+        }
+        return deserializers.get(clazz).get();
     }
 }

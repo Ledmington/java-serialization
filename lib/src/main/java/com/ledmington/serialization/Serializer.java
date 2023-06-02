@@ -86,8 +86,11 @@ public final class Serializer {
     }
 
     public void write(final Object obj) {
-        if (serializers.containsKey(obj.getClass())) {
-            serializers.get(obj.getClass()).accept(obj);
+        if (!serializers.containsKey(obj.getClass())) {
+            throw new IllegalArgumentException(String.format(
+                    "Cannot serialize object with unknown class %s",
+                    obj.getClass().getName()));
         }
+        serializers.get(obj.getClass()).accept(obj);
     }
 }

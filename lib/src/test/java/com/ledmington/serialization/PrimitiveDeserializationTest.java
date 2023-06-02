@@ -26,10 +26,17 @@ import org.junit.jupiter.api.Test;
 
 public final class PrimitiveDeserializationTest {
     @Test
-    public void readBoolean() {
+    public void readBooleanPrimitive() {
         final Deserializer des = new Deserializer(new byte[] {(byte) 0xff, (byte) 0x00});
         assertTrue(des.readBoolean());
         assertFalse(des.readBoolean());
+    }
+
+    @Test
+    public void readBooleanBoxed() {
+        final Deserializer des = new Deserializer(new byte[] {(byte) 0xff, (byte) 0x00});
+        assertEquals(true, des.read(Boolean.class));
+        assertEquals(false, des.read(Boolean.class));
     }
 
     @Test
@@ -39,26 +46,45 @@ public final class PrimitiveDeserializationTest {
     }
 
     @Test
-    public void readByte() {
+    public void readBytePrimitive() {
         final Deserializer des = new Deserializer(new byte[] {(byte) 0x12, (byte) 0x34});
         assertEquals(des.readByte(), (byte) 0x12);
         assertEquals(des.readByte(), (byte) 0x34);
     }
 
     @Test
-    public void readShort() {
+    public void readByteBoxed() {
+        final Deserializer des = new Deserializer(new byte[] {(byte) 0x12, (byte) 0x34});
+        assertEquals((byte) 0x12, des.read(Byte.class));
+        assertEquals((byte) 0x34, des.read(Byte.class));
+    }
+
+    @Test
+    public void readShortPrimitive() {
         final Deserializer des = new Deserializer(new byte[] {(byte) 0x12, (byte) 0x34});
         assertEquals(des.readShort(), (short) 4660);
     }
 
     @Test
-    public void readInteger() {
+    public void readShortBoxed() {
+        final Deserializer des = new Deserializer(new byte[] {(byte) 0x12, (byte) 0x34});
+        assertEquals((short) 4660, des.read(Short.class));
+    }
+
+    @Test
+    public void readIntegerPrimitive() {
         final Deserializer des = new Deserializer(new byte[] {(byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78});
         assertEquals(des.readInt(), 305_419_896);
     }
 
     @Test
-    public void readLong() {
+    public void readIntegerBoxed() {
+        final Deserializer des = new Deserializer(new byte[] {(byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78});
+        assertEquals(305_419_896, des.read(Integer.class));
+    }
+
+    @Test
+    public void readLongPrimitive() {
         final Deserializer des = new Deserializer(new byte[] {
             (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78, (byte) 0x90, (byte) 0x12, (byte) 0x34, (byte) 0x56
         });
@@ -66,16 +92,38 @@ public final class PrimitiveDeserializationTest {
     }
 
     @Test
-    public void readFloat() {
+    public void readLongBoxed() {
+        final Deserializer des = new Deserializer(new byte[] {
+            (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78, (byte) 0x90, (byte) 0x12, (byte) 0x34, (byte) 0x56
+        });
+        assertEquals(1_311_768_467_284_833_366L, des.read(Long.class));
+    }
+
+    @Test
+    public void readFloatPrimitive() {
         final Deserializer des = new Deserializer(new byte[] {(byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78});
         assertEquals(des.readFloat(), (float) 5.6904566139e-28);
     }
 
     @Test
-    public void readDouble() {
+    public void readFloatBoxed() {
+        final Deserializer des = new Deserializer(new byte[] {(byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78});
+        assertEquals((float) 5.6904566139e-28, des.read(Float.class));
+    }
+
+    @Test
+    public void readDoublePrimitive() {
         final Deserializer des = new Deserializer(new byte[] {
             (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78, (byte) 0x90, (byte) 0x12, (byte) 0x34, (byte) 0x56
         });
         assertEquals(des.readDouble(), 5.62634909901491201382066931077E-221);
+    }
+
+    @Test
+    public void readDoubleBoxed() {
+        final Deserializer des = new Deserializer(new byte[] {
+            (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78, (byte) 0x90, (byte) 0x12, (byte) 0x34, (byte) 0x56
+        });
+        assertEquals(5.62634909901491201382066931077E-221, des.read(Double.class));
     }
 }
