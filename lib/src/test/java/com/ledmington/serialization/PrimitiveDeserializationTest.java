@@ -146,4 +146,16 @@ public final class PrimitiveDeserializationTest {
         });
         assertEquals(5.62634909901491201382066931077E-221, des.read());
     }
+
+    @Test
+    public void readCharacterPrimitive() {
+        final Deserializer des = new Deserializer(new byte[] {(byte) 0x00, (byte) 0x30});
+        assertEquals('0', des.readChar());
+    }
+
+    @Test
+    public void readCharacterBoxed() {
+        final Deserializer des = new Deserializer(new byte[] {ClassCodes.CHAR.getCode(), (byte) 0x00, (byte) 0x30});
+        assertEquals('0', des.read());
+    }
 }

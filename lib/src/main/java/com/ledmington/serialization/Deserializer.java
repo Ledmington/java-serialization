@@ -42,6 +42,7 @@ public final class Deserializer {
         deserializers.put(Long.class, this::readLong);
         deserializers.put(Float.class, this::readFloat);
         deserializers.put(Double.class, this::readDouble);
+        deserializers.put(Character.class, this::readChar);
 
         deserializers.put(Optional.class, () -> {
             final byte b = readRaw();
@@ -122,6 +123,12 @@ public final class Deserializer {
         l = (l << 8) | (readRaw() & 0xff);
         l = (l << 8) | (readRaw() & 0xff);
         return Double.longBitsToDouble(l);
+    }
+
+    public char readChar() {
+        int c = (readRaw() & 0xff);
+        c = (c << 8) | (readRaw() & 0xff);
+        return (char) c;
     }
 
     public Object read() {

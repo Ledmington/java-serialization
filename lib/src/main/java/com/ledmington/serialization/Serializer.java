@@ -35,9 +35,9 @@ public final class Serializer {
         serializers.put(Long.class, obj -> write(((Long) obj).longValue()));
         serializers.put(Float.class, obj -> write(((Float) obj).floatValue()));
         serializers.put(Double.class, obj -> write(((Double) obj).doubleValue()));
+        serializers.put(Character.class, obj -> write(((Character) obj).charValue()));
 
         serializers.put(Optional.class, obj -> {
-            writeRaw(ClassCodes.OPTIONAL.getCode());
             final Optional<?> opt = (Optional<?>) obj;
             if (opt.isEmpty()) {
                 writeRaw((byte) 0x00);
@@ -59,12 +59,10 @@ public final class Serializer {
     }
 
     public void write(byte b) {
-        writeRaw(ClassCodes.BYTE.getCode());
         writeRaw(b);
     }
 
     public void write(boolean b) {
-        writeRaw(ClassCodes.BOOLEAN.getCode());
         if (b) {
             writeRaw((byte) 0xff);
         } else {
@@ -73,13 +71,11 @@ public final class Serializer {
     }
 
     public void write(short s) {
-        writeRaw(ClassCodes.SHORT.getCode());
         writeRaw((byte) (s >> 8));
         writeRaw((byte) (s & 0xff));
     }
 
     public void write(int i) {
-        writeRaw(ClassCodes.INTEGER.getCode());
         writeRaw((byte) (i >> 24));
         writeRaw((byte) ((i >> 16) & 0xff));
         writeRaw((byte) ((i >> 8) & 0xff));
@@ -87,7 +83,6 @@ public final class Serializer {
     }
 
     public void write(long l) {
-        writeRaw(ClassCodes.LONG.getCode());
         writeRaw((byte) (l >> 56));
         writeRaw((byte) ((l >> 48) & 0xff));
         writeRaw((byte) ((l >> 40) & 0xff));
@@ -99,7 +94,6 @@ public final class Serializer {
     }
 
     public void write(float f) {
-        writeRaw(ClassCodes.FLOAT.getCode());
         int i = Float.floatToIntBits(f);
         writeRaw((byte) (i >> 24));
         writeRaw((byte) ((i >> 16) & 0xff));
@@ -108,7 +102,6 @@ public final class Serializer {
     }
 
     public void write(double d) {
-        writeRaw(ClassCodes.DOUBLE.getCode());
         long l = Double.doubleToLongBits(d);
         writeRaw((byte) (l >> 56));
         writeRaw((byte) ((l >> 48) & 0xff));
@@ -120,12 +113,20 @@ public final class Serializer {
         writeRaw((byte) (l & 0xff));
     }
 
+    public void write(char c) {
+        writeRaw((byte) (c >> 8));
+        writeRaw((byte) (c & 0xff));
+    }
+
     public void write(final Object obj) {
+        final Class<?> clazz = obj.getClass();
         if (!serializers.containsKey(obj.getClass())) {
             throw new IllegalArgumentException(String.format(
                     "Cannot serialize object with unknown class %s",
                     obj.getClass().getName()));
         }
+        final byte classCode = ClassCodes.fromClass(clazz);
+        writeRaw(classCode);
         serializers.get(obj.getClass()).accept(obj);
     }
 }
