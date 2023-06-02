@@ -114,3 +114,9 @@ spotless {
 }
 
 tasks.compileJava.dependsOn(spotlessApply)
+
+jar {
+	doLast {
+		printf("Jar size: %d bytes\n", jar.archiveFile.get().getAsFile().length())
+	}
+}
