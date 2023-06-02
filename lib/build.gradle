@@ -41,7 +41,7 @@ testlogger {
 
 	showExceptions true
 	showStackTraces true
-	showFullStackTraces false
+	showFullStackTraces true
 	showCauses true
 
 	slowThreshold 2000
@@ -53,7 +53,7 @@ testlogger {
 	showFailed true
 	showOnlySlow false
 
-	showStandardStreams false
+	showStandardStreams true
 	showPassedStandardStreams false
 	showSkippedStandardStreams false
 	showFailedStandardStreams true
